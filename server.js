@@ -2,11 +2,25 @@ var http = require('http');
 
 var fs = require('fs');
 
+var cache = {};
+
+var path =  ('./client.html');
+
+function send404(response) {
+	response.writeHead(404, {'Content-Type': 'text/plain'})
+	response.write('Error 404.');
+	response.end();
+}
+
 var app = http.createServer(function(request, response) {
-	fs.readFile("client.html", 'utf-8', function (error, data) {
+	fs.readFile(path, 'utf-8', function (err, data) {
+		if(err){
+		send404(response);		
+			} else {
         response.writeHead(200, {'Content-Type': 'text/html'});
-        response.write(data);
-        response.end();
+        cache[path] = data;
+        response.end(data);
+				}
     });
 }).listen(1337);
 
